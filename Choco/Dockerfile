@@ -22,7 +22,8 @@ COPY --from=build-env /app/out .
 
 # Создаем пользователя с ограниченными правами
 RUN useradd -m choco && \
-    chown -R choco:choco /app
+    chown -R choco:choco /app && \
+    chmod +w -R /app/Generated
 USER choco
 
 # Открываем порт для приложения
