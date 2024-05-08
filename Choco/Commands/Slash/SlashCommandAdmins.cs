@@ -72,7 +72,7 @@ namespace Choco.Commands.Slash
 
             string pathAvatar = $"./Pictures/achPictures/ava-original-{user.Id}.png";
             string pathAvatarResized = $"./Pictures/achPictures/ava-resized-{user.Id}.png";
-            string pathComposed = $"./Generated/achPictures/composed-{user.Id}.png";
+            string pathComposed = $"./Generated/composed-{user.Id}.png";
 
             string pathBg = $"./Pictures/achPictures/bg-{bg}.png";
             string pathRibbon = $"./Pictures/achPictures/ribbon-{ribbon}.png";
