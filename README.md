@@ -14,7 +14,7 @@ Choco's capabilities are distributed across several services, each designed to p
 1. **ServiceCommandRpgService**: Manages the creation of embedded content for RPG commands, enhancing user interaction with visually rich messages.
 2. **ServicesGames**: A general service hub for game-related functionalities. Currently includes:
    - **ServiceChannelGameMenu**: Service to call up the menu. Initially 3 messages of any kind must be created from the bot in it.
-   - **ServiceGameNovella**: Handles the execution and management of a novel-style game. 
+   - **ServiceGameNovella**: Launch of a game novel 
 3. **ServicesLogsDiscord**: Logs various events and activities directly into a designated Discord server channel for monitoring and auditing purposes. At the moment, this channel displays logs for interaction with the visual novel's play button
 4. **ServiceChannelReactionEmoji**: Automatically adds reaction emojis to messages in specified Discord channels.
 5. **ServiceSendEmojiToChat**: Sends random emojis at random intervals to specified channels, adding a fun and unpredictable element to the interactions. The desired emoji is changed in the emojiesNames list.
