@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Choco": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:54072;http://localhost:54073"
+    }
+  }
+}

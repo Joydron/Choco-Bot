@@ -15,15 +15,15 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
-RUN mkdir -p /app/Generated
-
 # Копируем собранное приложение из образа сборки
 COPY --from=build-env /app/out .
 
-# Создаем пользователя с ограниченными правами
+# Копирование директории Pictures
+COPY ./Pictures /app/Pictures
+
+# Создаем пользователя choco и даем права
 RUN useradd -m choco && \
-    chown -R choco:choco /app && \
-    chmod +w -R /app/Generated
+    chown -R choco:choco /app 
 USER choco
 
 # Открываем порт для приложения
