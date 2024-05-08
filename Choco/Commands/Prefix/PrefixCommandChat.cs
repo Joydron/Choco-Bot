@@ -32,7 +32,7 @@ namespace Choco.Commands.Prefix
                     .Select(answer => answer.goodwords)
                     .FirstOrDefaultAsync() ?? "default";
 
-                await ctx.Channel.SendMessageAsync(ctx.User.Mention + response);
+                await ctx.Channel.SendMessageAsync(ctx.User.Mention + " " + response);
 
             }
         }
