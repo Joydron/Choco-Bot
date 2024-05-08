@@ -44,7 +44,7 @@ namespace Choco
             // Set Configuration
             var discordConfig = new DiscordConfiguration
             {
-                Intents = DiscordIntents.All,
+                Intents = DiscordIntents.AllUnprivileged | DiscordIntents.MessageContents,
                 Token = configProperties.discordToken,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
