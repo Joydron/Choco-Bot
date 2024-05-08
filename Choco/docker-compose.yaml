@@ -13,8 +13,6 @@ services:
     image: postgres:16
     hostname: postgres
     container_name: postgres
-    ports:
-      - 5432:5432
     env_file: .env
     volumes:
       - ./DataBase/Sql:/docker-entrypoint-initdb.d
@@ -29,8 +27,6 @@ services:
     container_name: choco
     depends_on:
       - postgres
-    ports:
-      - 80:80
     env_file: .env
     user: choco
     networks:
