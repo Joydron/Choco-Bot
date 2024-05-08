@@ -1,4 +1,5 @@
 ﻿using ChocoLogging;
+using ConfigChannels;
 using DSharpPlus;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -67,7 +68,6 @@ namespace Choco.Commands.Slash
                               [Option("title", "Title of the achievement")] string? title = null,
                               [Option("description", "Description of the achievement")] string? description = null)
         {
-
             LogMessage.LogsCommand(ctx: ctx);
 
             string pathAvatar = $"./Pictures/achPictures/ava-original-{user.Id}.png";
@@ -77,6 +77,9 @@ namespace Choco.Commands.Slash
             string pathBg = $"./Pictures/achPictures/bg-{bg}.png";
             string pathRibbon = $"./Pictures/achPictures/ribbon-{ribbon}.png";
             string pathIcon = $"./Pictures/achPictures/icon-{ribbon}.png";
+
+            ulong getChannelIdSendAchievement = ConfigChannelId.GetChannelId("IdChannelSendAchievement");
+            var channel = await ctx.Client.GetChannelAsync(getChannelIdSendAchievement);
 
             using (WebClient client = new WebClient())
             {
@@ -101,7 +104,7 @@ namespace Choco.Commands.Slash
                 }
 
                 using (var composedImageLoad = new MagickImage(pathComposed))
-                
+
                 // ribbon => compose
                 using (var ribbonImageLoad = new MagickImage(pathRibbon))
                 {
@@ -133,11 +136,10 @@ namespace Choco.Commands.Slash
                         {"achievement-cover.png", fileStream},
                         {"achievement-icon.png", iconFileStream}
                     };
-                    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
+                    await channel.SendMessageAsync(new DiscordMessageBuilder()
                         .AddEmbed(embed)
                         .AddFiles(streams));
-                
-
+                    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Done"));
                 }
             }
         }
