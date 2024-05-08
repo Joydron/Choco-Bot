@@ -73,7 +73,7 @@ namespace Choco.Commands.Slash
 
             string pathAvatar = $"./Pictures/achPictures/ava-original-{user.Id}.png";
             string pathAvatarResized = $"./Pictures/achPictures/ava-resized-{user.Id}.png";
-            string pathComposed = $"./Pictures/achPicture/composed-{user.Id}.png";
+            string pathComposed = $"./Pictures/achPictures/composed-{user.Id}.png";
 
             string pathBg = $"./Pictures/achPictures/bg-{bg}.png";
             string pathRibbon = $"./Pictures/achPictures/ribbon-{ribbon}.png";
@@ -95,60 +95,52 @@ namespace Choco.Commands.Slash
                     }
 
                     using (var backgroundLoad = new MagickImage(pathBg))
-                    {
-                        // avatar and bg => compose
-                        using (var avatarLoad = new MagickImage(pathAvatarResized))
-                        {
-                            backgroundLoad.Composite(avatarLoad, Gravity.Center, CompositeOperator.Over);
-                            backgroundLoad.Write(pathComposed);
-                        }
-                    }
 
+                    // avatar and bg => compose
+                    using (var avatarLoad = new MagickImage(pathAvatarResized))
+                    {
+                        backgroundLoad.Composite(avatarLoad, Gravity.Center, CompositeOperator.Over);
+                        backgroundLoad.Write(pathComposed);
+                    }
 
                     using (var composedImageLoad = new MagickImage(pathComposed))
+
+                    // ribbon => compose
+                    using (var ribbonImageLoad = new MagickImage(pathRibbon))
                     {
-                        // ribbon => compose
-                        using (var ribbonImageLoad = new MagickImage(pathRibbon))
-                        {
-                            composedImageLoad.Composite(ribbonImageLoad, Gravity.Center, CompositeOperator.Over);
-                            composedImageLoad.Write(pathComposed);
-                        }
+                        composedImageLoad.Composite(ribbonImageLoad, Gravity.Center, CompositeOperator.Over);
+                        composedImageLoad.Write(pathComposed);
                     }
-
-
 
                     // send to chat achievement
                     using (var fileStream = File.OpenRead(pathComposed))
+                    using (var iconFileStream = File.OpenRead(pathIcon))
                     {
-                        using (var iconFileStream = File.OpenRead(pathIcon))
+                        var embed = new DiscordEmbedBuilder
                         {
-                            var embed = new DiscordEmbedBuilder
+                            Title = $"Открыто достижение для {user.Username}: {title}",
+                            Description = description + " " + user.Mention,
+                            Color = DiscordColor.Teal,
+                            ImageUrl = $"attachment://achievement-cover.png",
+                            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
                             {
-                                Title = $"Открыто достижение для {user.Username}: {title}",
-                                Description = description + " " + user.Mention,
-                                Color = DiscordColor.Teal,
-                                ImageUrl = $"attachment://achievement-cover.png",
-                                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
-                                {
-                                    Url = $"attachment://achievement-icon.png"
-                                },
-                                Footer = new DiscordEmbedBuilder.EmbedFooter
-                                {
-                                    Text = $"Достижение выдал(а): {ctx.User.Username}"
-                                }
-                            };
-                            var streams = new Dictionary<string, Stream>
+                                Url = $"attachment://achievement-icon.png"
+                            },
+                            Footer = new DiscordEmbedBuilder.EmbedFooter
+                            {
+                                Text = $"Достижение выдал(а): {ctx.User.Username}"
+                            }
+                        };
+                        var streams = new Dictionary<string, Stream>
                     {
                         {"achievement-cover.png", fileStream},
                         {"achievement-icon.png", iconFileStream}
                     };
-                            await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
-                                .AddEmbed(embed)
-                                .AddFiles(streams));
+                        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
+                            .AddEmbed(embed)
+                            .AddFiles(streams));
 
-                        }
                     }
-
                 }
                 catch (BadRequestException e)
                 {
