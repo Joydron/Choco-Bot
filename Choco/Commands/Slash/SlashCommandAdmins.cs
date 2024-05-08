@@ -84,10 +84,15 @@ namespace Choco.Commands.Slash
             Program.Client.Logger.LogInformation($"[Achievement.Info] - started");
             using (WebClient client = new WebClient())
             {
-                // load and save avatar
-                byte[] imageDataAvatar = client.DownloadData(user.AvatarUrl);
-                File.WriteAllBytes(pathAvatar, imageDataAvatar);
-                Program.Client.Logger.LogInformation($"[Achievement.Info] - avatar loaded");
+                try {
+                    // load and save avatar
+                    byte[] imageDataAvatar = client.DownloadData(user.AvatarUrl);
+                    Program.Client.Logger.LogInformation($"[Achievement.Info] - avatar loaded");
+                    File.WriteAllBytes(pathAvatar, imageDataAvatar);
+                    Program.Client.Logger.LogInformation($"[Achievement.Info] - avatar saved");
+                } catch (Exception e) {
+                    Program.Client.Logger.LogError($"[Achievement.Error] - can't load avatar: {e}");
+                }
 
                 // do small avatar
                 using (MagickImage image = new MagickImage(pathAvatar))
@@ -147,7 +152,9 @@ namespace Choco.Commands.Slash
                         .AddEmbed(embed)
                         .AddFiles(streams));
                     Program.Client.Logger.LogInformation($"[Achievement.Info] - achievement sent");
-                    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Done"));
+                    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
+                        .WithContent("Done")
+                        .AsEphemeral(true));
                     Program.Client.Logger.LogInformation($"[Achievement.Info] - response sent");
                 }
             }
