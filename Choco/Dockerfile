@@ -15,6 +15,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
+RUN mkdir -p /app/Generated
+
 # Копируем собранное приложение из образа сборки
 COPY --from=build-env /app/out .
 
