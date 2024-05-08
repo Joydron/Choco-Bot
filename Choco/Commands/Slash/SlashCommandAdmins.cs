@@ -70,8 +70,8 @@ namespace Choco.Commands.Slash
 
             LogMessage.LogsCommand(ctx: ctx);
 
-            string pathAvatar = $"./Pictures/achPictures/ava-original-{user.Id}.png";
-            string pathAvatarResized = $"./Pictures/achPictures/ava-resized-{user.Id}.png";
+            string pathAvatar = $"./Generated/ava-original-{user.Id}.png";
+            string pathAvatarResized = $"./Generated/ava-resized-{user.Id}.png";
             string pathComposed = $"./Generated/composed-{user.Id}.png";
 
             string pathBg = $"./Pictures/achPictures/bg-{bg}.png";
