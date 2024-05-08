@@ -1,4 +1,4 @@
-﻿using ChocoLogging;
+using ChocoLogging;
 using ConfigChannels;
 using DSharpPlus;
 using DSharpPlus.CommandsNext.Attributes;
