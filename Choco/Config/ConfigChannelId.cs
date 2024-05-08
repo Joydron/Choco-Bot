@@ -22,6 +22,7 @@ namespace ConfigChannels
             ChannelIds["IdChannelSendEmoji"] = configuration.GetValue<ulong>("ID_CHANNEL_SEND_EMOJI");
             ChannelIds["IdChannelSendReaction1"] = configuration.GetValue<ulong>("ID_CHANNEL_SEND_REACTION1");
             ChannelIds["IdChannelSendReaction2"] = configuration.GetValue<ulong>("ID_CHANNEL_SEND_REACTION2");
+            ChannelIds["IdChannelSendAchievement"] = configuration.GetValue<ulong>("ID_CHANNEL_SEND_ACHIEVEMENT");
         }
         public static ulong GetChannelId(string key)
         {

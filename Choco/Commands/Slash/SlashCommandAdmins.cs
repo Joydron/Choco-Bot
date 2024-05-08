@@ -1,4 +1,5 @@
-﻿using ChocoLogging;
+using ChocoLogging;
+using ConfigChannels;
 using DSharpPlus;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -17,7 +18,7 @@ namespace Choco.Commands.Slash
 
                               [Option("member", "The member to manage their role")]
                               DiscordUser user,
-        #region "achievement tools"
+#region "achievement tools"
                               [Choice("0 - Шахматы", 0)]
                               [Choice("1 - Роскомнадзор тян", 1)]
                               [Choice("2 - Пепе с вином и накаченный Пепе", 2)]
@@ -63,97 +64,83 @@ namespace Choco.Commands.Slash
                               [Choice("Желтая ленточка", 9)]
                               [Choice("Зеленая ленточка", 10)]
                               [Option("ribbon", "Ленточки для достижений")] long ribbon,
-        #endregion
+# endregion
                               [Option("title", "Title of the achievement")] string? title = null,
                               [Option("description", "Description of the achievement")] string? description = null)
         {
+            LogMessage.LogsCommand(ctx: ctx);
 
-            try
+            string pathAvatar = $"./Pictures/achPictures/ava-original-{user.Id}.png";
+            string pathAvatarResized = $"./Pictures/achPictures/ava-resized-{user.Id}.png";
+            string pathComposed = $"./Pictures/achPicture/composed-{user.Id}.png";
+
+            string pathBg = $"./Pictures/achPictures/bg-{bg}.png";
+            string pathRibbon = $"./Pictures/achPictures/ribbon-{ribbon}.png";
+            string pathIcon = $"./Pictures/achPictures/icon-{ribbon}.png";
+
+            ulong getChannelIdSendAchievement = ConfigChannelId.GetChannelId("IdChannelSendAchievement");
+            var channel = await ctx.Client.GetChannelAsync(getChannelIdSendAchievement);
+
+            using (WebClient client = new WebClient())
             {
-                LogMessage.LogsCommand(ctx: ctx);
+                // load and save avatar
+                byte[] imageDataAvatar = client.DownloadData(user.AvatarUrl);
+                File.WriteAllBytes(pathAvatar, imageDataAvatar);
 
-                string pathAvatar = $"./Pictures/achPictures/ava-original-{user.Id}.png";
-                string pathAvatarResized = $"./Pictures/achPictures/ava-resized-{user.Id}.png";
-                string pathComposed = $"./Pictures/achPictures/composed-{user.Id}.png";
-
-                string pathBg = $"./Pictures/achPictures/bg-{bg}.png";
-                string pathRibbon = $"./Pictures/achPictures/ribbon-{ribbon}.png";
-                string pathIcon = $"./Pictures/achPictures/icon-{ribbon}.png";
-
-                using (WebClient client = new WebClient())
+                // do small avatar
+                using (MagickImage image = new MagickImage(pathAvatar))
                 {
-                    Console.WriteLine($"8");
-                    // load and save avatar
-                    byte[] imageDataAvatar = client.DownloadData(user.AvatarUrl);
-                    File.WriteAllBytes(pathAvatar, imageDataAvatar);
+                    image.Resize(new MagickGeometry(300, 300));
+                    image.Write(pathAvatarResized);
+                }
 
-                    Console.WriteLine($"9");
-                    // do small avatar
-                    using (MagickImage image = new MagickImage(pathAvatar))
+                using (var backgroundLoad = new MagickImage(pathBg))
+
+                // avatar and bg => compose
+                using (var avatarLoad = new MagickImage(pathAvatarResized))
+                {
+                    backgroundLoad.Composite(avatarLoad, Gravity.Center, CompositeOperator.Over);
+                    backgroundLoad.Write(pathComposed);
+                }
+
+                using (var composedImageLoad = new MagickImage(pathComposed))
+
+                // ribbon => compose
+                using (var ribbonImageLoad = new MagickImage(pathRibbon))
+                {
+                    composedImageLoad.Composite(ribbonImageLoad, Gravity.Center, CompositeOperator.Over);
+                    composedImageLoad.Write(pathComposed);
+                }
+
+                // send to chat achievement
+                using (var fileStream = File.OpenRead(pathComposed))
+                using (var iconFileStream = File.OpenRead(pathIcon))
+                {
+                    var embed = new DiscordEmbedBuilder
                     {
-                        image.Resize(new MagickGeometry(300, 300));
-                        image.Write(pathAvatarResized);
-                    }
-
-                    Console.WriteLine($"10");
-                    using (var backgroundLoad = new MagickImage(pathBg))
-
-                    // avatar and bg => compose
-                    using (var avatarLoad = new MagickImage(pathAvatarResized))
-                    {
-                        backgroundLoad.Composite(avatarLoad, Gravity.Center, CompositeOperator.Over);
-                        backgroundLoad.Write(pathComposed);
-                    }
-
-                    Console.WriteLine($"11");
-                    using (var composedImageLoad = new MagickImage(pathComposed))
-
-                    // ribbon => compose
-                    using (var ribbonImageLoad = new MagickImage(pathRibbon))
-                    {
-                        composedImageLoad.Composite(ribbonImageLoad, Gravity.Center, CompositeOperator.Over);
-                        composedImageLoad.Write(pathComposed);
-                    }
-
-                    Console.WriteLine($"12");
-                    // send to chat achievement
-                    using (var fileStream = File.OpenRead(pathComposed))
-                    using (var iconFileStream = File.OpenRead(pathIcon))
-                    {
-                        var embed = new DiscordEmbedBuilder
+                        Title = $"Открыто достижение для {user.Username}: {title}",
+                        Description = description + " " + user.Mention,
+                        Color = DiscordColor.Teal,
+                        ImageUrl = $"attachment://achievement-cover.png",
+                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
                         {
-                            Title = $"Открыто достижение для {user.Username}: {title}",
-                            Description = description + " " + user.Mention,
-                            Color = DiscordColor.Teal,
-                            ImageUrl = $"attachment://achievement-cover.png",
-                            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
-                            {
-                                Url = $"attachment://achievement-icon.png"
-                            },
-                            Footer = new DiscordEmbedBuilder.EmbedFooter
-                            {
-                                Text = $"Достижение выдал(а): {ctx.User.Username}"
-                            }
-                        };
-                        Console.WriteLine($"13");
-                        var streams = new Dictionary<string, Stream>
+                            Url = $"attachment://achievement-icon.png"
+                        },
+                        Footer = new DiscordEmbedBuilder.EmbedFooter
+                        {
+                            Text = $"Достижение выдал(а): {ctx.User.Username}"
+                        }
+                    };
+                    var streams = new Dictionary<string, Stream>
                     {
                         {"achievement-cover.png", fileStream},
                         {"achievement-icon.png", iconFileStream}
                     };
-                        Console.WriteLine($"14");
-                        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
-                            .AddEmbed(embed)
-                            .AddFiles(streams));
-
-                        Console.WriteLine($"15");
-
-                    }
+                    await channel.SendMessageAsync(new DiscordMessageBuilder()
+                        .AddEmbed(embed)
+                        .AddFiles(streams));
+                    await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Done"));
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"========================= {e}");
             }
         }
     }
