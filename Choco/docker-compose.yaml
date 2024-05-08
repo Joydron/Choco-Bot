@@ -32,8 +32,6 @@ services:
     ports:
       - 80:80
     env_file: .env
-    volumes:
-      - ./Pictures:/app/Pictures
     user: choco
     networks:
       - choco-network
