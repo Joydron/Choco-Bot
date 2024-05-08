@@ -81,11 +81,13 @@ namespace Choco.Commands.Slash
             ulong getChannelIdSendAchievement = ConfigChannelId.GetChannelId("IdChannelSendAchievement");
             var channel = await ctx.Client.GetChannelAsync(getChannelIdSendAchievement);
 
+            Program.Client.Logger.LogInformation($"[Achievement.Info] - started");
             using (WebClient client = new WebClient())
             {
                 // load and save avatar
                 byte[] imageDataAvatar = client.DownloadData(user.AvatarUrl);
                 File.WriteAllBytes(pathAvatar, imageDataAvatar);
+                Program.Client.Logger.LogInformation($"[Achievement.Info] - avatar loaded");
 
                 // do small avatar
                 using (MagickImage image = new MagickImage(pathAvatar))
@@ -93,6 +95,7 @@ namespace Choco.Commands.Slash
                     image.Resize(new MagickGeometry(300, 300));
                     image.Write(pathAvatarResized);
                 }
+                Program.Client.Logger.LogInformation($"[Achievement.Info] - avatar resized");
 
                 using (var backgroundLoad = new MagickImage(pathBg))
 
@@ -102,6 +105,7 @@ namespace Choco.Commands.Slash
                     backgroundLoad.Composite(avatarLoad, Gravity.Center, CompositeOperator.Over);
                     backgroundLoad.Write(pathComposed);
                 }
+                Program.Client.Logger.LogInformation($"[Achievement.Info] - background image composed");
 
                 using (var composedImageLoad = new MagickImage(pathComposed))
 
@@ -111,11 +115,13 @@ namespace Choco.Commands.Slash
                     composedImageLoad.Composite(ribbonImageLoad, Gravity.Center, CompositeOperator.Over);
                     composedImageLoad.Write(pathComposed);
                 }
+                Program.Client.Logger.LogInformation($"[Achievement.Info] - ribbon image composed");
 
                 // send to chat achievement
                 using (var fileStream = File.OpenRead(pathComposed))
                 using (var iconFileStream = File.OpenRead(pathIcon))
                 {
+                    Program.Client.Logger.LogInformation($"[Achievement.Info] - result opened");
                     var embed = new DiscordEmbedBuilder
                     {
                         Title = $"Открыто достижение для {user.Username}: {title}",
@@ -136,10 +142,13 @@ namespace Choco.Commands.Slash
                         {"achievement-cover.png", fileStream},
                         {"achievement-icon.png", iconFileStream}
                     };
+                    Program.Client.Logger.LogInformation($"[Achievement.Info] - embed created");
                     await channel.SendMessageAsync(new DiscordMessageBuilder()
                         .AddEmbed(embed)
                         .AddFiles(streams));
+                    Program.Client.Logger.LogInformation($"[Achievement.Info] - achievement sent");
                     await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Done"));
+                    Program.Client.Logger.LogInformation($"[Achievement.Info] - response sent");
                 }
             }
         }
