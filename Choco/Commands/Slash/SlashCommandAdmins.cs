@@ -2,7 +2,6 @@
 using DSharpPlus;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 using DSharpPlus.SlashCommands;
 using ImageMagick;
 using System.Net;
@@ -18,7 +17,7 @@ namespace Choco.Commands.Slash
 
                               [Option("member", "The member to manage their role")]
                               DiscordUser user,
-#region "achievement tools"
+        #region "achievement tools"
                               [Choice("0 - Шахматы", 0)]
                               [Choice("1 - Роскомнадзор тян", 1)]
                               [Choice("2 - Пепе с вином и накаченный Пепе", 2)]
@@ -64,29 +63,31 @@ namespace Choco.Commands.Slash
                               [Choice("Желтая ленточка", 9)]
                               [Choice("Зеленая ленточка", 10)]
                               [Option("ribbon", "Ленточки для достижений")] long ribbon,
-# endregion
+        #endregion
                               [Option("title", "Title of the achievement")] string? title = null,
                               [Option("description", "Description of the achievement")] string? description = null)
         {
 
-            LogMessage.LogsCommand(ctx: ctx);
-
-            string pathAvatar = $"./Pictures/achPictures/ava-original-{user.Id}.png";
-            string pathAvatarResized = $"./Pictures/achPictures/ava-resized-{user.Id}.png";
-            string pathComposed = $"./Pictures/achPictures/composed-{user.Id}.png";
-
-            string pathBg = $"./Pictures/achPictures/bg-{bg}.png";
-            string pathRibbon = $"./Pictures/achPictures/ribbon-{ribbon}.png";
-            string pathIcon = $"./Pictures/achPictures/icon-{ribbon}.png";
-
-            using (WebClient client = new WebClient())
+            try
             {
-                try
+                LogMessage.LogsCommand(ctx: ctx);
+
+                string pathAvatar = $"./Pictures/achPictures/ava-original-{user.Id}.png";
+                string pathAvatarResized = $"./Pictures/achPictures/ava-resized-{user.Id}.png";
+                string pathComposed = $"./Pictures/achPicture/composed-{user.Id}.png";
+
+                string pathBg = $"./Pictures/achPictures/bg-{bg}.png";
+                string pathRibbon = $"./Pictures/achPictures/ribbon-{ribbon}.png";
+                string pathIcon = $"./Pictures/achPictures/icon-{ribbon}.png";
+
+                using (WebClient client = new WebClient())
                 {
+                    Console.WriteLine($"8");
                     // load and save avatar
                     byte[] imageDataAvatar = client.DownloadData(user.AvatarUrl);
                     File.WriteAllBytes(pathAvatar, imageDataAvatar);
 
+                    Console.WriteLine($"9");
                     // do small avatar
                     using (MagickImage image = new MagickImage(pathAvatar))
                     {
@@ -94,6 +95,7 @@ namespace Choco.Commands.Slash
                         image.Write(pathAvatarResized);
                     }
 
+                    Console.WriteLine($"10");
                     using (var backgroundLoad = new MagickImage(pathBg))
 
                     // avatar and bg => compose
@@ -103,6 +105,7 @@ namespace Choco.Commands.Slash
                         backgroundLoad.Write(pathComposed);
                     }
 
+                    Console.WriteLine($"11");
                     using (var composedImageLoad = new MagickImage(pathComposed))
 
                     // ribbon => compose
@@ -112,6 +115,7 @@ namespace Choco.Commands.Slash
                         composedImageLoad.Write(pathComposed);
                     }
 
+                    Console.WriteLine($"12");
                     // send to chat achievement
                     using (var fileStream = File.OpenRead(pathComposed))
                     using (var iconFileStream = File.OpenRead(pathIcon))
@@ -131,23 +135,25 @@ namespace Choco.Commands.Slash
                                 Text = $"Достижение выдал(а): {ctx.User.Username}"
                             }
                         };
+                        Console.WriteLine($"13");
                         var streams = new Dictionary<string, Stream>
                     {
                         {"achievement-cover.png", fileStream},
                         {"achievement-icon.png", iconFileStream}
                     };
+                        Console.WriteLine($"14");
                         await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
                             .AddEmbed(embed)
                             .AddFiles(streams));
 
+                        Console.WriteLine($"15");
+
                     }
                 }
-                catch (BadRequestException e)
-                {
-
-                    ctx.Client.Logger.LogInformation($"error: {e.Errors}");
-                    ctx.Client.Logger.LogInformation($"error: {e.JsonMessage}");
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"========================= {e}");
             }
         }
     }
