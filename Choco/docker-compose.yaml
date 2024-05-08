@@ -1,0 +1,39 @@
+version: '3.5'
+
+networks:
+  choco-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/16
+
+services:
+  postgres:
+    image: postgres:16
+    hostname: postgres
+    container_name: postgres
+    ports:
+      - 5432:5432
+    env_file: .env
+    volumes:
+      - ./DataBase/Sql:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      - choco-network
+
+  choco:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chocobot
+    depends_on:
+      - postgres
+    ports:
+      - 80:80
+    env_file: .env
+    volumes:
+      - ./Pictures:/app/Pictures
+    user: choco
+    networks:
+      - choco-network
