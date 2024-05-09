@@ -19,7 +19,6 @@
 		<PackageReference Include="DSharpPlus.Rest" Version="4.4.6" />
 		<PackageReference Include="DSharpPlus.SlashCommands" Version="4.4.6" />
 		<PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.7.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
 		  <PrivateAssets>all</PrivateAssets>

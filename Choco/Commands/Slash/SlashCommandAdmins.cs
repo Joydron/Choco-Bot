@@ -81,17 +81,17 @@ namespace Choco.Commands.Slash
             ulong getChannelIdSendAchievement = ConfigChannelId.GetChannelId("IdChannelSendAchievement");
             var channel = await ctx.Client.GetChannelAsync(getChannelIdSendAchievement);
 
-            Program.Client.Logger.LogInformation($"[Achievement.Info] - started");
-            using (WebClient client = new WebClient())
+            Program.Client?.Logger.LogInformation($"[Achievement.Info] - started");
+            using (HttpClient client = new HttpClient())
             {
                 try {
                     // load and save avatar
-                    byte[] imageDataAvatar = client.DownloadData(user.AvatarUrl);
-                    Program.Client.Logger.LogInformation($"[Achievement.Info] - avatar loaded");
+                    byte[] imageDataAvatar = await client.GetByteArrayAsync(user.AvatarUrl);
+                    Program.Client?.Logger.LogInformation($"[Achievement.Info] - avatar loaded");
                     File.WriteAllBytes(pathAvatar, imageDataAvatar);
-                    Program.Client.Logger.LogInformation($"[Achievement.Info] - avatar saved");
+                    Program.Client?.Logger.LogInformation($"[Achievement.Info] - avatar saved");
                 } catch (Exception e) {
-                    Program.Client.Logger.LogError($"[Achievement.Error] - can't load avatar: {e}");
+                    Program.Client?.Logger.LogError($"[Achievement.Error] - can't load avatar: {e}");
                 }
 
                 // do small avatar
@@ -100,7 +100,7 @@ namespace Choco.Commands.Slash
                     image.Resize(new MagickGeometry(300, 300));
                     image.Write(pathAvatarResized);
                 }
-                Program.Client.Logger.LogInformation($"[Achievement.Info] - avatar resized");
+                Program.Client?.Logger.LogInformation($"[Achievement.Info] - avatar resized");
 
                 using (var backgroundLoad = new MagickImage(pathBg))
 
@@ -110,7 +110,7 @@ namespace Choco.Commands.Slash
                     backgroundLoad.Composite(avatarLoad, Gravity.Center, CompositeOperator.Over);
                     backgroundLoad.Write(pathComposed);
                 }
-                Program.Client.Logger.LogInformation($"[Achievement.Info] - background image composed");
+                Program.Client?.Logger.LogInformation($"[Achievement.Info] - background image composed");
 
                 using (var composedImageLoad = new MagickImage(pathComposed))
 
@@ -120,13 +120,13 @@ namespace Choco.Commands.Slash
                     composedImageLoad.Composite(ribbonImageLoad, Gravity.Center, CompositeOperator.Over);
                     composedImageLoad.Write(pathComposed);
                 }
-                Program.Client.Logger.LogInformation($"[Achievement.Info] - ribbon image composed");
+                Program.Client?.Logger.LogInformation($"[Achievement.Info] - ribbon image composed");
 
                 // send to chat achievement
                 using (var fileStream = File.OpenRead(pathComposed))
                 using (var iconFileStream = File.OpenRead(pathIcon))
                 {
-                    Program.Client.Logger.LogInformation($"[Achievement.Info] - result opened");
+                    Program.Client?.Logger.LogInformation($"[Achievement.Info] - result opened");
                     var embed = new DiscordEmbedBuilder
                     {
                         Title = $"Открыто достижение для {user.Username}: {title}",
@@ -147,15 +147,15 @@ namespace Choco.Commands.Slash
                         {"achievement-cover.png", fileStream},
                         {"achievement-icon.png", iconFileStream}
                     };
-                    Program.Client.Logger.LogInformation($"[Achievement.Info] - embed created");
+                    Program.Client?.Logger.LogInformation($"[Achievement.Info] - embed created");
                     await channel.SendMessageAsync(new DiscordMessageBuilder()
                         .AddEmbed(embed)
                         .AddFiles(streams));
-                    Program.Client.Logger.LogInformation($"[Achievement.Info] - achievement sent");
+                    Program.Client?.Logger.LogInformation($"[Achievement.Info] - achievement sent");
                     await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
                         .WithContent("Done")
                         .AsEphemeral(true));
-                    Program.Client.Logger.LogInformation($"[Achievement.Info] - response sent");
+                    Program.Client?.Logger.LogInformation($"[Achievement.Info] - response sent");
                 }
             }
         }

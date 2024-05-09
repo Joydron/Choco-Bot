@@ -13,7 +13,8 @@ namespace Choco.Services.ServicesGames
             LogMessage.LogService();
             await args.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
 
-            var member = args.Interaction.User as DiscordMember;
+            if (!(args.Interaction.User is DiscordMember member))
+                return;
             await ServicesLogsGameDiscord.ServicesLogsDiscordNovella(args, member);
 
             var send = await member.CreateDmChannelAsync();

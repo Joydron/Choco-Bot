@@ -41,8 +41,7 @@ namespace Choco.Commands.Slash
                     .FirstOrDefaultAsync() ?? "default";
 
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent(response));
-                
-            } 
+            }
         }
 
         [SlashCommand("ping", "ping?")]
@@ -71,6 +70,16 @@ namespace Choco.Commands.Slash
                         .Where(rpg => rpg.Id == randomId)
                         .FirstOrDefaultAsync();
 
+                    if (rpgEntry == null) {
+                        Program.Client?.Logger.LogError($"[RpgCommand.Error] - Can't get rpg entry.");
+                        return;
+                    }
+
+                    if (rpgEntry.name == null) {
+                        Program.Client?.Logger.LogError($"[RpgCommand.Error] - Rpg entry has no name.");
+                        return;
+                    }
+
                     var loadingMessage = await ctx.Channel.SendMessageAsync("[--------------]");
                     await LoadingService.ServiceUpdateLoadingMessage(loadingMessage, 2);
 
@@ -92,23 +101,18 @@ namespace Choco.Commands.Slash
                     string pathPic3 = $"./Pictures/rpgPictures/{randomId}_" + $"{cleanedName.Replace(" ", "_")}_pic3_resized.png";
 
                     var streamCover = ServiceCommandRpgService.ServiceGetStreamFromFile(pathCover);
-                    await LoadingService.ServiceUpdateLoadingMessage(loadingMessage, 8);
                     var streamPic1 = ServiceCommandRpgService.ServiceGetStreamFromFile(pathPic1);
-                    await LoadingService.ServiceUpdateLoadingMessage(loadingMessage, 10);
                     var streamPic2 = ServiceCommandRpgService.ServiceGetStreamFromFile(pathPic2);
-                    await LoadingService.ServiceUpdateLoadingMessage(loadingMessage, 12);
                     var streamPic3 = ServiceCommandRpgService.ServiceGetStreamFromFile(pathPic3);
 
-
-                    await Task.WhenAll(streamCover, streamPic1, streamPic2, streamPic3);
                     await LoadingService.ServiceUpdateLoadingMessage(loadingMessage, 14);
 
                     var streams = new Dictionary<string, Stream>
                         {
-                            {"image.png", streamCover.Result},
-                            {"pic1.png", streamPic1.Result},
-                            {"pic2.png", streamPic2.Result},
-                            {"pic3.png", streamPic3.Result}
+                            {"image.png", streamCover},
+                            {"pic1.png", streamPic1},
+                            {"pic2.png", streamPic2},
+                            {"pic3.png", streamPic3}
                         };
 
                     await LoadingService.ServiceUpdateLoadingMessage(loadingMessage, 16);

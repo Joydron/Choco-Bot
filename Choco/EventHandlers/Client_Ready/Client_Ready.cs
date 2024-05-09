@@ -8,7 +8,7 @@ namespace Choco.EventHandlers
     {
         public static async Task HandlerReady (DiscordClient sender, ReadyEventArgs e)
         {
-            LogMessage.LogHandler();
+            await Task.Run(() => LogMessage.LogHandler());
         }
     }
 }
