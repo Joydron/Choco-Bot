@@ -46,7 +46,7 @@ namespace Choco.Services.ServicesCommands
             };
         }
 
-        public static async Task<Stream> ServiceGetStreamFromFile(string filePath)
+        public static Stream ServiceGetStreamFromFile(string filePath)
         {
             LogMessage.LogService();
 

@@ -23,9 +23,9 @@ namespace Choco
 {
     public sealed class Program
     {
-        public static DiscordClient Client { get; set; }
-        public static CommandsNextExtension Commands { get; set; }
-        public ComponentInteractionCreateEventArgs ComponentInteractionCreated { get; private set; }
+        public static DiscordClient? Client { get; set; }
+        public static CommandsNextExtension? Commands { get; set; }
+        public ComponentInteractionCreateEventArgs? ComponentInteractionCreated { get; private set; }
 
         static async Task Main(string[] args)
         {
@@ -40,6 +40,9 @@ namespace Choco
             // Create Configuration
             var configProperties = new ConfigJsonReader();
             await configProperties.ReadJSON();
+            if (configProperties.discordPrefix == null ||
+                configProperties.discordToken == null)
+                return;
 
             // Set Configuration
             var discordConfig = new DiscordConfiguration

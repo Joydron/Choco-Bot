@@ -13,9 +13,9 @@ namespace Choco.Core.Database.Logger
     {
         protected static readonly EventId BotEventId = new(0110, "Choco");
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            Program.Client.Logger.LogError($"[Postgress.Error] - {state}");
+            Program.Client?.Logger.LogError($"[Postgress.Error] - {state}");
         }
 
         public bool IsEnabled(LogLevel logLevel)
@@ -23,7 +23,8 @@ namespace Choco.Core.Database.Logger
             return true;
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state)
+                where TState : notnull
         {
             return null;
         }
