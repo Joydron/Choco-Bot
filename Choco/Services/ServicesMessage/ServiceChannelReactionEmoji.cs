@@ -16,7 +16,7 @@ namespace Choco.Services.ServicesMessage
         {
             var emojiChannelIds = new Dictionary<string, string>
             {
-                { "IdChannelSendReaction1", ":puzirik:" },
+                { "IdChannelSendReaction1", ":lublu:" },
                 { "IdChannelSendReaction2", ":nya:" }
             };
 
