@@ -16,6 +16,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using Choco.Services.ServicesCommands;
 using ChocoLogging;
 using System.Reflection;
+using DSharpPlus.SlashCommands.Attributes;
 
 namespace Choco.Commands.Slash
 {
