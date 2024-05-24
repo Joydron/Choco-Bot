@@ -24,6 +24,7 @@ namespace Choco.Commands.Slash
         private static readonly Random random = new Random();
 
         [SlashCommand("answer_me", "ми?")]
+        [SlashCooldown(1, 5, SlashCooldownBucketType.User)]
         public async Task CommandAnswerMe (InteractionContext ctx)
         {
             LogMessage.LogsCommand(ctx: ctx);
@@ -45,6 +46,7 @@ namespace Choco.Commands.Slash
         }
 
         [SlashCommand("ping", "ping?")]
+        [SlashCooldown(1, 5, SlashCooldownBucketType.User)]
         public async Task CommandPing(InteractionContext ctx)
         {
             LogMessage.LogsCommand(ctx: ctx);
@@ -54,6 +56,7 @@ namespace Choco.Commands.Slash
 
 
         [SlashCommand("rpg", "Выбирает рандомную игру на rpg maker")]
+        [SlashCooldown(1, 5, SlashCooldownBucketType.User)]
         public async Task CommandRpg(InteractionContext ctx)
         {
             LogMessage.LogsCommand(ctx: ctx);
@@ -130,6 +133,7 @@ namespace Choco.Commands.Slash
         }
 
         [SlashCommand("ava", "Получить аватар пользователя")]
+        [SlashCooldown(1, 5, SlashCooldownBucketType.User)]
         public async Task Avatar(InteractionContext ctx)
         {
             LogMessage.LogsCommand(ctx: ctx);
